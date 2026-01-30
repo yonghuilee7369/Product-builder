@@ -93,3 +93,39 @@ button:hover {
     font-size: 1.2rem;
     font-weight: bold;
 }
+
+/* Styles for Contact Form */
+.contact-page body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to start to prevent form from stretching across entire height */
+    min-height: 100vh; /* Use min-height for scrollable content */
+    padding: 2rem 0; /* Add some vertical padding */
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.contact-form .input-group label {
+    margin-bottom: 0.5rem;
+}
+
+.contact-form .input-group input,
+.contact-form .input-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--input-border-color);
+    border-radius: 4px;
+    background-color: var(--container-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    box-sizing: border-box; /* Ensures padding doesn't add to the width */
+}
+
+.contact-form button[type="submit"] {
+    margin-top: 1rem;
+}
