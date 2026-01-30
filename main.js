@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const calculateBtn = document.getElementById('calculate-btn');
     const resultDiv = document.getElementById('result');
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+    });
 
     calculateBtn.addEventListener('click', () => {
         const purchasePrice = parseFloat(document.getElementById('purchase-price').value);
