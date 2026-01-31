@@ -1,0 +1,230 @@
+/* General Body & Typography */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    color: #333;
+    background-color: #f4f4f9;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+p {
+    margin-bottom: 1.2em;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Header & Navigation */
+header {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 5%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    margin-left: 2rem;
+}
+
+nav ul li a {
+    font-weight: 500;
+    color: #555;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: #007bff;
+    text-decoration: none;
+}
+
+/* Main Content */
+main {
+    padding: 2rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem 5%;
+    margin-top: 4rem;
+    background-color: #333;
+    color: #fff;
+}
+
+/* Hero Section (Homepage) */
+.hero {
+    text-align: center;
+    padding: 4rem 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 8px;
+    margin-bottom: 3rem;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-top: 0;
+}
+
+.hero p {
+    font-size: 1.2rem;
+}
+
+.hero .button {
+    background-color: #fff;
+    color: #007bff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 700;
+    margin-top: 1rem;
+    display: inline-block;
+}
+
+/* Features Section (Homepage) */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.feature {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+/* About & Blog Pages */
+.about-section, .blog-list-section, .blog-post {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.blog-post-summary {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.blog-post-summary:last-child {
+    border-bottom: none;
+}
+
+.post-meta {
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.read-more {
+    font-weight: 700;
+}
+
+/* Calculator & Animal Test specific styles */
+.calculator, #image-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#result {
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+#image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#uploaded-image {
+    max-width: 100%;
+    margin-top: 1rem;
+    border-radius: 5px;
+}
+
+#label-container {
+    margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav ul {
+        display: none; /* Simple hiding for now, could be a hamburger menu */
+    }
+}
