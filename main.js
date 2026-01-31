@@ -1,38 +1,68 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const calculateBtn = document.getElementById('calculate-btn');
-    const resultDiv = document.getElementById('result');
-    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+// Teachable Machine model URL
+const URL = "https://teachablemachine.withgoogle.com/models/3TI-L38Mc/";
 
-    themeToggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-    });
+let model, webcam, labelContainer, maxPredictions;
 
-    calculateBtn.addEventListener('click', () => {
-        const purchasePrice = parseFloat(document.getElementById('purchase-price').value);
-        const sellingPrice = parseFloat(document.getElementById('selling-price').value);
-        const shares = parseInt(document.getElementById('shares').value);
+// Load the image model and setup the webcam
+async function init() {
+    const modelURL = URL + "model.json";
+    const metadataURL = URL + "metadata.json";
 
-        if (isNaN(purchasePrice) || isNaN(sellingPrice) || isNaN(shares) || purchasePrice <= 0 || sellingPrice <= 0 || shares <= 0) {
-            resultDiv.innerHTML = '<p style="color: red;">Please enter valid numbers for all fields.</p>';
-            return;
+    // load the model and metadata
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+
+    // setup webcam
+    const flip = true; // whether to flip the webcam
+    webcam = new tmImage.Webcam(300, 300, flip); // width, height, flip
+    await webcam.setup(); // request access to the webcam
+    await webcam.play();
+    window.requestAnimationFrame(loop);
+
+    // append elements to the DOM
+    document.getElementById("webcam-container").appendChild(webcam.canvas);
+    labelContainer = document.getElementById("label-container");
+    for (let i = 0; i < maxPredictions; i++) { // and class labels
+        const div = document.createElement("div");
+        const barContainer = document.createElement("div");
+        barContainer.className = "result-bar-container";
+        const bar = document.createElement("div");
+        bar.className = "result-bar";
+        const span = document.createElement("span");
+
+        barContainer.appendChild(bar);
+        div.appendChild(span);
+        div.appendChild(barContainer);
+        labelContainer.appendChild(div);
+    }
+
+    // hide the start button
+    document.getElementById("start-button").style.display = "none";
+}
+
+async function loop() {
+    webcam.update(); // update the webcam frame
+    await predict();
+    window.requestAnimationFrame(loop);
+}
+
+// run the webcam image through the image model
+async function predict() {
+    // predict can take in an image, video or canvas html element
+    const prediction = await model.predict(webcam.canvas);
+    for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction =
+            prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        const bar = labelContainer.childNodes[i].querySelector(".result-bar");
+        const span = labelContainer.childNodes[i].querySelector("span");
+        
+        span.innerHTML = classPrediction;
+        bar.style.width = prediction[i].probability * 100 + "%";
+
+        if(prediction[i].className === "강아지") {
+            bar.classList.add("dog-bar");
+        } else if (prediction[i].className === "고양이") {
+            bar.classList.add("cat-bar");
         }
-
-        const totalInvestment = purchasePrice * shares;
-        const totalSale = sellingPrice * shares;
-        const profitOrLoss = totalSale - totalInvestment;
-        const roi = (profitOrLoss / totalInvestment) * 100;
-
-        let resultHTML = `<p>Total Investment: $${totalInvestment.toFixed(2)}</p>`;
-        resultHTML += `<p>Total Sale: $${totalSale.toFixed(2)}</p>`;
-
-        if (profitOrLoss >= 0) {
-            resultHTML += `<p style="color: green;">Profit: $${profitOrLoss.toFixed(2)}</p>`;
-            resultHTML += `<p style="color: green;">Return on Investment (ROI): ${roi.toFixed(2)}%</p>`;
-        } else {
-            resultHTML += `<p style="color: red;">Loss: $${Math.abs(profitOrLoss).toFixed(2)}</p>`;
-            resultHTML += `<p style="color: red;">Return on Investment (ROI): ${roi.toFixed(2)}%</p>`;
-        }
-
-        resultDiv.innerHTML = resultHTML;
-    });
-});
+    }
+}
