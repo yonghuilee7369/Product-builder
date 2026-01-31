@@ -11,7 +11,7 @@ h1 {
     color: #333;
 }
 
-#start-button {
+button {
     background-color: #4CAF50;
     color: white;
     padding: 15px 32px;
@@ -19,15 +19,32 @@ h1 {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 20px 0;
+    margin: 10px 5px;
     cursor: pointer;
     border: none;
     border-radius: 4px;
     transition: background-color 0.3s;
 }
 
-#start-button:hover {
+button:hover {
     background-color: #45a049;
+}
+
+#image-container {
+    margin: 20px auto;
+    width: 300px;
+    height: 300px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#uploaded-image {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 #webcam-container {
