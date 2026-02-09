@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주식 수익률 계산기 - MyTools</title>
-    <meta name="description" content="무료 주식 수익률 계산기로 투자 성과를 쉽게 파악하세요. 매수가, 매도가, 주식 수를 입력하면 수익률을 즉시 계산해드립니다.">
+    <title>AI 체형 변환 시뮬레이터 - MyTools</title>
+    <meta name="description" content="무료 AI 체형 변환 시뮬레이터! 인물 사진을 업로드하면 근육질, 통통, 마른 체형 등 다양한 체형으로 변환된 모습을 확인할 수 있습니다.">
     <link rel="stylesheet" href="../css/style.css">
     <meta name="google-adsense-account" content="ca-pub-9243327397411448">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9243327397411448"
@@ -16,7 +16,7 @@
             <a href="/" class="logo">MyTools</a>
             <ul>
                 <li><a href="/">홈</a></li>
-                <li><a href="/tools/stock-calculator.html">주식 수익률 계산기</a></li>
+                <li><a href="/tools/body-transform.html">체형 변환</a></li>
                 <li><a href="/tools/animal-face-test.html">동물상 테스트</a></li>
                 <li><a href="/about.html">소개</a></li>
                 <li><a href="/contact.html">연락처</a></li>
@@ -27,24 +27,21 @@
 
     <main>
         <section class="tool-section">
-            <h1>주식 수익률 계산기</h1>
-            <p>간단한 정보 입력으로 주식 투자 수익률을 빠르고 정확하게 계산해 보세요. 투자 성과를 쉽게 파악하고 다음 투자 전략을 세우는 데 도움을 드립니다.</p>
-            
-            <div class="calculator">
-                <div class="input-group">
-                    <label for="purchase-price">매수 가격 ($)</label>
-                    <input type="number" id="purchase-price" placeholder="매수 가격을 입력하세요">
+            <h1>AI 체형 변환 시뮬레이터</h1>
+            <p>인물 사진을 업로드하면 다양한 체형으로 변환된 모습을 확인할 수 있습니다. 근육질, 통통한 체형, 마른 체형 등 5가지 체형 변환 결과를 한눈에 비교해보세요!</p>
+
+            <div class="upload-area">
+                <input type="file" id="image-upload" accept="image/*">
+                <div class="original-preview" id="original-preview">
+                    <p>사진을 선택해주세요</p>
+                    <img id="preview-image" src="" alt="원본 이미지 미리보기" style="display:none;">
                 </div>
-                <div class="input-group">
-                    <label for="selling-price">매도 가격 ($)</label>
-                    <input type="number" id="selling-price" placeholder="매도 가격을 입력하세요">
-                </div>
-                <div class="input-group">
-                    <label for="shares">주식 수</label>
-                    <input type="number" id="shares" placeholder="주식 수를 입력하세요">
-                </div>
-                <button id="calculate-btn">계산하기</button>
-            <div id="result" class="result"></div>
+                <button id="transform-button">체형 변환 시작</button>
+            </div>
+
+            <div id="results-container" style="display:none;">
+                <h2>변환 결과</h2>
+                <div class="results-grid" id="results-grid"></div>
             </div>
         </section>
     </main>
@@ -58,7 +55,7 @@
         <p>&copy; 2026 MyTools. All rights reserved.</p>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="../js/body-transform.js"></script>
     <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-9243327397411448"
