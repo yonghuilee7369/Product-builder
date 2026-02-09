@@ -7,33 +7,89 @@ const resultsGrid = document.getElementById('results-grid');
 
 let loadedImage = null;
 
-const transformTypes = [
+// Smooth cosine interpolation between control points
+function smoothScale(controlPoints, t) {
+    t = Math.max(0, Math.min(1, t));
+    // Find surrounding control points
+    var i;
+    for (i = 0; i < controlPoints.length - 1; i++) {
+        if (t <= controlPoints[i + 1][0]) break;
+    }
+    if (i >= controlPoints.length - 1) return controlPoints[controlPoints.length - 1][1];
+
+    var p0 = controlPoints[i];
+    var p1 = controlPoints[i + 1];
+    var local = (t - p0[0]) / (p1[0] - p0[0]);
+    // Cosine interpolation for extra smoothness
+    var blend = (1 - Math.cos(local * Math.PI)) / 2;
+    return p0[1] + (p1[1] - p0[1]) * blend;
+}
+
+// Scanline-based warping: draws image row-by-row with smooth width variation
+function scanlineWarp(ctx, img, w, h, scalePoints) {
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    for (var y = 0; y < h; y++) {
+        var t = y / h;
+        var scale = smoothScale(scalePoints, t);
+        var stripW = Math.round(w * scale);
+        var offsetX = Math.round((w - stripW) / 2);
+
+        // Source row in original image
+        var srcY = Math.floor(t * img.height);
+        var srcH = Math.max(1, Math.ceil(img.height / h));
+
+        ctx.drawImage(img, 0, srcY, img.width, srcH,
+            offsetX, y, stripW, 1);
+    }
+}
+
+// Scanline-based warping with vertical displacement (for height changes)
+function scanlineWarpVertical(ctx, img, w, h, scaleX, scaleY) {
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+
+    for (var y = 0; y < h; y++) {
+        var tDest = y / h;
+        // Map destination y to source y using vertical scale curve
+        var tSrc = smoothScale(scaleY, tDest);
+        var xScale = smoothScale(scaleX, tDest);
+
+        var stripW = Math.round(w * xScale);
+        var offsetX = Math.round((w - stripW) / 2);
+
+        var srcY = Math.floor(tSrc * img.height);
+        var srcH = Math.max(1, Math.ceil(img.height / h));
+
+        if (srcY >= 0 && srcY < img.height) {
+            ctx.drawImage(img, 0, srcY, img.width, srcH,
+                offsetX, y, stripW, 1);
+        }
+    }
+}
+
+var transformTypes = [
     {
         name: '근육질 체형',
         emoji: '🏋️',
         description: '넓은 어깨와 좁은 허리의 V자 실루엣',
         transform: function(ctx, img, w, h) {
-            const topH = Math.floor(h * 0.35);
-            const midH = Math.floor(h * 0.35);
-            const botH = h - topH - midH;
-
-            // 어깨 부분 넓히기
-            const topW = Math.floor(w * 1.2);
-            const topX = Math.floor((w - topW) / 2);
-            ctx.drawImage(img, 0, 0, img.width, Math.floor(img.height * 0.35),
-                topX, 0, topW, topH);
-
-            // 허리 부분 좁히기
-            const midW = Math.floor(w * 0.85);
-            const midX = Math.floor((w - midW) / 2);
-            ctx.drawImage(img, 0, Math.floor(img.height * 0.35), img.width, Math.floor(img.height * 0.35),
-                midX, topH, midW, midH);
-
-            // 하체 약간 넓히기
-            const botW = Math.floor(w * 1.05);
-            const botX = Math.floor((w - botW) / 2);
-            ctx.drawImage(img, 0, Math.floor(img.height * 0.7), img.width, img.height - Math.floor(img.height * 0.7),
-                botX, topH + midH, botW, botH);
+            // Control points: [normalizedY, horizontalScale]
+            // Head normal → shoulders wide → waist narrow → hips normal → feet normal
+            scanlineWarp(ctx, img, w, h, [
+                [0.00, 1.00],  // top of head
+                [0.10, 1.02],  // forehead
+                [0.18, 1.12],  // shoulders start
+                [0.28, 1.18],  // shoulders peak
+                [0.35, 1.10],  // upper chest
+                [0.50, 0.88],  // waist (narrowest)
+                [0.60, 0.92],  // lower waist
+                [0.70, 1.02],  // hips
+                [0.80, 1.04],  // upper thighs
+                [0.90, 1.00],  // lower legs
+                [1.00, 1.00]   // feet
+            ]);
         }
     },
     {
@@ -41,27 +97,20 @@ const transformTypes = [
         emoji: '🍔',
         description: '전체적으로 볼륨감 있는 풍성한 체형',
         transform: function(ctx, img, w, h) {
-            const topH = Math.floor(h * 0.3);
-            const midH = Math.floor(h * 0.4);
-            const botH = h - topH - midH;
-
-            // 상체 약간 넓히기
-            const topW = Math.floor(w * 1.15);
-            const topX = Math.floor((w - topW) / 2);
-            ctx.drawImage(img, 0, 0, img.width, Math.floor(img.height * 0.3),
-                topX, 0, topW, topH);
-
-            // 복부 중심으로 넓히기
-            const midW = Math.floor(w * 1.35);
-            const midX = Math.floor((w - midW) / 2);
-            ctx.drawImage(img, 0, Math.floor(img.height * 0.3), img.width, Math.floor(img.height * 0.4),
-                midX, topH, midW, midH);
-
-            // 하체 넓히기
-            const botW = Math.floor(w * 1.2);
-            const botX = Math.floor((w - botW) / 2);
-            ctx.drawImage(img, 0, Math.floor(img.height * 0.7), img.width, img.height - Math.floor(img.height * 0.7),
-                botX, topH + midH, botW, botH);
+            // Everything wider, belly area widest
+            scanlineWarp(ctx, img, w, h, [
+                [0.00, 1.00],  // top of head
+                [0.08, 1.02],  // head
+                [0.15, 1.08],  // neck/chin (fuller face)
+                [0.22, 1.14],  // shoulders
+                [0.30, 1.18],  // upper chest
+                [0.42, 1.28],  // belly peak
+                [0.55, 1.25],  // lower belly
+                [0.65, 1.18],  // hips
+                [0.75, 1.14],  // thighs
+                [0.85, 1.08],  // calves
+                [1.00, 1.02]   // feet
+            ]);
         }
     },
     {
@@ -69,27 +118,20 @@ const transformTypes = [
         emoji: '🦴',
         description: '전체적으로 슬림하고 날씬한 체형',
         transform: function(ctx, img, w, h) {
-            const topH = Math.floor(h * 0.3);
-            const midH = Math.floor(h * 0.4);
-            const botH = h - topH - midH;
-
-            // 상체 좁히기
-            const topW = Math.floor(w * 0.85);
-            const topX = Math.floor((w - topW) / 2);
-            ctx.drawImage(img, 0, 0, img.width, Math.floor(img.height * 0.3),
-                topX, 0, topW, topH);
-
-            // 복부 좁히기
-            const midW = Math.floor(w * 0.75);
-            const midX = Math.floor((w - midW) / 2);
-            ctx.drawImage(img, 0, Math.floor(img.height * 0.3), img.width, Math.floor(img.height * 0.4),
-                midX, topH, midW, midH);
-
-            // 하체 좁히기
-            const botW = Math.floor(w * 0.8);
-            const botX = Math.floor((w - botW) / 2);
-            ctx.drawImage(img, 0, Math.floor(img.height * 0.7), img.width, img.height - Math.floor(img.height * 0.7),
-                botX, topH + midH, botW, botH);
+            // Everything narrower, waist/limbs most narrow
+            scanlineWarp(ctx, img, w, h, [
+                [0.00, 1.00],  // top of head
+                [0.10, 0.98],  // head
+                [0.18, 0.92],  // neck (thinner)
+                [0.25, 0.88],  // shoulders
+                [0.35, 0.84],  // chest
+                [0.48, 0.78],  // waist (narrowest)
+                [0.58, 0.80],  // lower belly
+                [0.68, 0.84],  // hips
+                [0.78, 0.82],  // thighs
+                [0.88, 0.86],  // calves
+                [1.00, 0.92]   // feet
+            ]);
         }
     },
     {
@@ -97,13 +139,29 @@ const transformTypes = [
         emoji: '📏',
         description: '수직으로 늘씬하게 늘어난 체형',
         transform: function(ctx, img, w, h) {
-            // 수직으로 늘리기 (1.25배)
-            const newH = Math.floor(h * 1.25);
-            const newW = Math.floor(w * 0.95);
-            const offsetX = Math.floor((w - newW) / 2);
-            const offsetY = Math.floor((h - newH) / 2);
-            ctx.drawImage(img, 0, 0, img.width, img.height,
-                offsetX, offsetY, newW, newH);
+            // Vertical stretch: source maps compressed so body looks taller
+            // scaleX: slightly narrower, scaleY: maps dest y to source y (compressed source)
+            scanlineWarpVertical(ctx, img, w, h,
+                // X scale - slightly narrower for elongated look
+                [
+                    [0.00, 0.98],
+                    [0.15, 0.96],
+                    [0.50, 0.94],
+                    [0.85, 0.96],
+                    [1.00, 0.98]
+                ],
+                // Y mapping: dest t → source t (pull source upward to stretch)
+                // Head stays relatively normal, body stretches
+                [
+                    [0.00, 0.00],
+                    [0.12, 0.14],  // head slightly compressed
+                    [0.30, 0.36],  // torso starts stretching
+                    [0.50, 0.58],  // mid body
+                    [0.70, 0.78],  // lower body
+                    [0.85, 0.90],  // legs
+                    [1.00, 1.00]
+                ]
+            );
         }
     },
     {
@@ -111,28 +169,42 @@ const transformTypes = [
         emoji: '🔲',
         description: '수직으로 압축된 아담한 체형',
         transform: function(ctx, img, w, h) {
-            // 수직으로 압축 (0.75배), 수평 약간 넓히기
-            const newH = Math.floor(h * 0.75);
-            const newW = Math.floor(w * 1.1);
-            const offsetX = Math.floor((w - newW) / 2);
-            const offsetY = Math.floor((h - newH) / 2);
-            ctx.drawImage(img, 0, 0, img.width, img.height,
-                offsetX, offsetY, newW, newH);
+            // Vertical compression: source maps expanded so body looks shorter
+            scanlineWarpVertical(ctx, img, w, h,
+                // X scale - slightly wider for stocky look
+                [
+                    [0.00, 1.02],
+                    [0.15, 1.04],
+                    [0.50, 1.08],
+                    [0.85, 1.04],
+                    [1.00, 1.02]
+                ],
+                // Y mapping: dest t → source t (push source down to compress)
+                [
+                    [0.00, 0.00],
+                    [0.15, 0.12],  // head slightly expanded
+                    [0.35, 0.28],  // torso compresses
+                    [0.55, 0.46],  // mid body
+                    [0.75, 0.66],  // lower body
+                    [0.90, 0.82],  // legs compressed
+                    [1.00, 1.00]
+                ]
+            );
         }
     }
 ];
 
 imageUpload.addEventListener('change', function(event) {
-    const file = event.target.files[0];
+    var file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    var reader = new FileReader();
     reader.onload = function(e) {
         previewImage.src = e.target.result;
         previewImage.style.display = 'block';
         originalPreview.querySelector('p').style.display = 'none';
 
-        const img = new Image();
+        var img = new Image();
         img.onload = function() {
             loadedImage = img;
         };
@@ -150,7 +222,9 @@ transformButton.addEventListener('click', function() {
     resultsGrid.innerHTML = '';
     resultsContainer.style.display = 'block';
 
-    var canvasWidth = 300;
+    // Use original image dimensions for high quality (capped at 800px width)
+    var maxWidth = 800;
+    var canvasWidth = Math.min(loadedImage.width, maxWidth);
     var ratio = loadedImage.height / loadedImage.width;
     var canvasHeight = Math.floor(canvasWidth * ratio);
 
@@ -164,6 +238,8 @@ transformButton.addEventListener('click', function() {
         canvas.height = canvasHeight;
 
         var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
         type.transform(ctx, loadedImage, canvasWidth, canvasHeight);
