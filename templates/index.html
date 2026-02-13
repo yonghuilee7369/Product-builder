@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>꿈해몽 - 오늘의 꿈풀이 | 무료 꿈 해석 사전</title>
+    <meta name="description" content="꿈에서 본 것이 무엇을 의미하는지 궁금하세요? {{ total_count }}가지 이상의 꿈 해몽을 무료로 확인하세요. 길몽, 흉몽, 행운의 숫자까지!">
+    <link rel="canonical" href="{{ site_url }}/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="꿈해몽 - 오늘의 꿈풀이">
+    <meta property="og:description" content="무료 꿈 해몽 사전. 꿈의 의미를 정확하게 풀이해 드립니다.">
+    <meta property="og:url" content="{{ site_url }}/">
+    <meta property="og:locale" content="ko_KR">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dream: {
+                            50: '#f0f4ff',
+                            100: '#dbe4ff',
+                            200: '#bac8ff',
+                            500: '#5c7cfa',
+                            600: '#4263eb',
+                            700: '#3b5bdb',
+                            800: '#364fc7',
+                            900: '#1e3a5f'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUB_ID"
+        crossorigin="anonymous"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- HEADER -->
+    <header class="bg-dream-900 text-white">
+        <div class="max-w-5xl mx-auto px-4 py-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold mb-3">
+                <span class="text-4xl md:text-5xl">&#9790;</span> 오늘의 꿈풀이
+            </h1>
+            <p class="text-white/70 mb-6">꿈에서 본 것이 무엇을 의미하는지, 지금 바로 확인하세요</p>
+
+            <!-- 검색창 -->
+            <form id="search-form" class="max-w-lg mx-auto">
+                <div class="relative">
+                    <input
+                        type="search"
+                        id="search-input"
+                        placeholder="꿈 키워드를 입력하세요 (예: 뱀, 돈, 이빨)"
+                        class="w-full rounded-full py-3 px-6 pr-12 text-gray-800 text-lg focus:outline-none focus:ring-4 focus:ring-dream-500/50 shadow-lg"
+                    >
+                    <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-dream-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <p class="text-white/50 text-sm mt-4">총 <strong class="text-white">{{ total_count }}</strong>개의 꿈 해몽 수록</p>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-8">
+
+        <!-- 광고 영역 -->
+        <div class="mb-8 p-2 bg-gray-100 rounded-lg text-center min-h-[90px] flex items-center justify-center">
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-YOUR_PUB_ID"
+                data-ad-slot="INDEX_TOP_AD"
+                data-ad-format="horizontal"
+                data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <!-- 카테고리별 꿈 목록 -->
+        {% for cat_name, cat_dreams in categories.items() %}
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-dream-800 mb-4 flex items-center gap-2">
+                {% if cat_name == '동물' %}&#128013;
+                {% elif cat_name == '신체' %}&#129463;
+                {% elif cat_name == '재물' %}&#128176;
+                {% else %}&#9733;
+                {% endif %}
+                {{ cat_name }} 꿈
+            </h2>
+
+            <div id="dream-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for dream in cat_dreams %}
+                <a href="/{{ dream.id }}/"
+                   class="dream-card block bg-white rounded-xl border border-gray-200 p-5 hover:border-dream-500 hover:shadow-lg transition group"
+                   data-keyword="{{ dream.keyword }}"
+                   data-tags="{{ dream.tags | join(',') }}">
+
+                    <div class="flex items-center gap-2 mb-2">
+                        {% if dream.is_good_omen %}
+                        <span class="text-xs font-bold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">&#128308; 길몽</span>
+                        {% else %}
+                        <span class="text-xs font-bold bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">&#128309; 흉몽</span>
+                        {% endif %}
+                        <span class="text-xs text-gray-400">{{ dream.category }}</span>
+                    </div>
+
+                    <h3 class="font-bold text-dream-900 group-hover:text-dream-600 transition mb-2">
+                        {{ dream.keyword }}
+                    </h3>
+                    <p class="text-sm text-gray-500 line-clamp-2">{{ dream.summary }}</p>
+
+                    <div class="flex gap-1 mt-3">
+                        {% for num in dream.lucky_numbers[:3] %}
+                        <span class="w-7 h-7 rounded-full bg-dream-50 text-dream-700 text-xs font-bold flex items-center justify-center">{{ num }}</span>
+                        {% endfor %}
+                        <span class="w-7 h-7 rounded-full bg-gray-100 text-gray-400 text-xs flex items-center justify-center">+{{ dream.lucky_numbers | length - 3 }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+
+        <!-- 광고 영역 -->
+        <div class="my-8 p-2 bg-gray-100 rounded-lg text-center min-h-[90px] flex items-center justify-center">
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-YOUR_PUB_ID"
+                data-ad-slot="INDEX_BOTTOM_AD"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-dream-900 text-white/70">
+        <div class="max-w-5xl mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm">
+                <div>
+                    <p class="font-bold text-white mb-2">&#9790; 오늘의 꿈풀이</p>
+                    <p>꿈을 통해 오늘의 운세와 행운을 확인하세요.</p>
+                </div>
+                <div>
+                    <p class="font-bold text-white mb-2">바로가기</p>
+                    <ul class="space-y-1">
+                        <li><a href="/index.html" class="hover:text-white transition">전체 꿈 목록</a></li>
+                        <li><a href="/category/animal.html" class="hover:text-white transition">동물 꿈</a></li>
+                        <li><a href="/category/money.html" class="hover:text-white transition">재물 꿈</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="font-bold text-white mb-2">안내</p>
+                    <ul class="space-y-1">
+                        <li><a href="/about.html" class="hover:text-white transition">사이트 소개</a></li>
+                        <li><a href="/privacy.html" class="hover:text-white transition">개인정보처리방침</a></li>
+                        <li><a href="/terms.html" class="hover:text-white transition">이용약관</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/10 mt-6 pt-4 text-center text-xs">
+                <p>&copy; 2026 오늘의 꿈풀이. All rights reserved.</p>
+                <p class="mt-1">본 사이트의 해몽 정보는 재미와 참고 목적이며, 전문적인 상담을 대체하지 않습니다.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 클라이언트 검색 필터 -->
+    <script>
+        const input = document.getElementById('search-input');
+        const cards = document.querySelectorAll('.dream-card');
+        const form = document.getElementById('search-form');
+
+        form.addEventListener('submit', (e) => e.preventDefault());
+
+        input.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            cards.forEach(card => {
+                const keyword = card.dataset.keyword.toLowerCase();
+                const tags = card.dataset.tags.toLowerCase();
+                const match = !q || keyword.includes(q) || tags.includes(q);
+                card.style.display = match ? '' : 'none';
+            });
+        });
+    </script>
+
+</body>
+</html>

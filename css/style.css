@@ -358,6 +358,42 @@ button:hover {
     margin-bottom: 1rem;
 }
 
+.status-message {
+    margin-top: 1rem;
+    padding: 0.8rem 1.2rem;
+    background-color: #e8f4fd;
+    border-radius: 6px;
+    color: #0c5460;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.status-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     nav ul {
